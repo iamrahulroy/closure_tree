@@ -32,7 +32,12 @@ module ClosureTree
       include ClosureTree::DeterministicOrdering if _ct.order_option?
       include ClosureTree::NumericDeterministicOrdering if _ct.order_is_numeric?
 
-      connection_pool.release_connection
+      # NOTE: Disable connection_pool.release_connection for jets
+      begin
+        connection_pool.release_connection
+      rescue => e
+        puts "Custom Exception Handler - Closure Tree & Jets doesn't go well: #{e.message}"
+      end
     rescue StandardError => e
       raise e unless ClosureTree.configuration.database_less
     end
